@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Register – GitHub Copilot Event – Microsoft Lyngby</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Registration for the GitHub Copilot Event – Microsoft Lyngby." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:#f6f8fa;
+      --card:#ffffff;
+      --brand:#8257e5;
+      --brand-hover:#6c38d9;
+      --accent-green:#1f883d;
+      --text:#1d2228;
+      --muted:#5d6470;
+      --radius-l:18px;
+      --shadow:0 2px 6px rgba(0,0,0,0.04),0 4px 18px -4px rgba(0,0,0,0.06);
+      --shadow-strong:0 2px 10px rgba(0,0,0,0.07),0 6px 22px -6px rgba(0,0,0,0.12);
+      --nav-height:66px;
+      scroll-behavior:smooth;
+    }
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      font-family:'Inter','Segoe UI',Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      overflow-x:hidden;
+    }
+    a{color:var(--brand);text-decoration:none;}
+    a:hover{text-decoration:underline;}
+    img{max-width:100%;display:block;height:auto;}
+    .wrap{width:100%;max-width:1080px;margin:0 auto;padding-inline:clamp(1rem,4vw,2.5rem);}
+    section{scroll-margin-top:calc(var(--nav-height) + 14px);}
+    /* Shared Nav (same as index) */
+    .top-nav{position:sticky;top:0;z-index:1000;background:rgba(255,255,255,0.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid #e2e6eb;}
+    .nav-inner{height:var(--nav-height);display:flex;align-items:center;gap:clamp(1rem,4vw,3.5rem);}
+    .brand{display:flex;align-items:center;gap:.65rem;font-weight:700;font-size:1.02rem;letter-spacing:-.5px;color:var(--text);text-decoration:none;white-space:nowrap;}
+    .brand img{width:34px;height:34px;}
+    .nav-links{display:flex;gap:30px;margin:0;padding:0;list-style:none;font-weight:500;flex:1;}
+    .nav-links a{padding:8px 4px;color:var(--text);border-radius:6px;font-size:0.95rem;transition:color .18s;}
+    .nav-links a:hover{color:var(--brand);}
+    .nav-links a.active{outline:2px solid #1158c7;outline-offset:2px;font-weight:600;}
+    .register-small{background:var(--brand);color:#fff;padding:10px 20px;border-radius:999px;font-weight:600;font-size:0.85rem;box-shadow:0 2px 8px rgba(130,87,229,.42);transition:background .18s,transform .18s;white-space:nowrap;}
+    .register-small:hover{background:var(--brand-hover);transform:translateY(-2px);text-decoration:none;}
+    .nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:8px 10px;border-radius:10px;}
+    .nav-toggle span{display:block;width:24px;height:2.5px;background:#24292f;position:relative;border-radius:2px;transition:transform .35s;}
+    .nav-toggle span:before,.nav-toggle span:after{content:"";position:absolute;inset:0;height:2.5px;background:#24292f;border-radius:2px;transition:transform .35s, top .35s;}
+    .nav-toggle span:before{top:-7px;}
+    .nav-toggle span:after{top:7px;}
+    .nav-open .nav-toggle span{background:transparent;}
+    .nav-open .nav-toggle span:before{top:0;transform:rotate(45deg);}
+    .nav-open .nav-toggle span:after{top:0;transform:rotate(-45deg);}
+    @media (max-width:880px){
+      .nav-links{position:fixed;inset:var(--nav-height) 0 0 0;flex-direction:column;background:#fff;padding:2.2rem clamp(1.2rem,5vw,2.5rem) 4rem;gap:1.2rem;transform:translateY(-120%);opacity:0;pointer-events:none;transition:transform .45s cubic-bezier(.65,.05,.36,1), opacity .3s;overflow-y:auto;}
+      .nav-open .nav-links{transform:translateY(0);opacity:1;pointer-events:auto;}
+      .nav-toggle{display:inline-flex;}
+      .register-small{display:none;}
+      body.nav-open{overflow:hidden;touch-action:none;}
+    }
+
+    /* Page Heading */
+    .hero-register{padding-top:clamp(2.2rem,5vw,3.5rem);padding-bottom:clamp(1.4rem,3vw,2.2rem);}
+    .hero-register h1{font-size:clamp(2rem,5.2vw,2.9rem);letter-spacing:clamp(-1px,-0.4vw,-1.6px);margin:0 0 14px;font-weight:800;}
+    .hero-register .lede{font-size:1.05rem;line-height:1.52;color:var(--muted);max-width:760px;margin:0;font-weight:500;}
+
+    /* Form container */
+    .form-shell{
+      background:var(--card);
+      border-radius:24px;
+      padding:42px clamp(1.4rem,3vw,2.5rem) 56px;
+      box-shadow:var(--shadow-strong);
+      position:relative;
+      margin:clamp(1.8rem,4vw,2.6rem) 0 4.2rem;
+      overflow:visible;
+    }
+    .form-shell:before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at 18% 20%, rgba(130,87,229,0.08), transparent 55%),
+        radial-gradient(circle at 85% 70%, rgba(153,101,255,0.06), transparent 60%);
+      pointer-events:none;
+    }
+    .form-shell h2{margin:0 0 10px;font-size:1.3rem;letter-spacing:-0.5px;}
+    .form-meta{font-size:0.88rem;color:var(--muted);font-weight:500;}
+
+    /* Responsive Google Form scaler */
+    .form-embed-outer{
+      margin-top:30px;
+      border:1px solid #e0e4e9;
+      border-radius:22px;
+      background:#fff;
+      box-shadow:0 2px 10px rgba(0,0,0,0.05);
+      position:relative;
+      overflow:hidden;
+      padding:0; /* no extra padding to avoid overflow */
+    }
+    .form-embed-outer.loading:before{
+      content:"Loading form…";
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:600;
+      font-size:0.95rem;
+      background:linear-gradient(135deg,#fafbfc 0%,#eef1f5 100%);
+      color:#59636e;
+      letter-spacing:.5px;
+      z-index:2;
+    }
+
+    /* The scaler wrapper that changes height; iframe inside keeps its intrinsic width (640) for clarity */
+    .form-scale-wrapper{
+      position:relative;
+      width:100%;
+      overflow:hidden;
+      /* height set dynamically via JS when scaled */
+    }
+    iframe.google-form{
+      border:0;
+      display:block;
+      background:#fff;
+      width:640px;          /* native Google Form content width */
+      height:1800px;        /* base height guess; adjust after final form */
+      transform-origin:top left;
+    }
+
+    .form-note{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;font-weight:600;color:#6a737d;margin-top:18px;text-align:center;}
+
+    footer{text-align:center;padding:60px 30px 80px;font-size:clamp(0.7rem,1.4vw,0.85rem);color:#5f6770;}
+
+    /* Dark mode alignment with index */
+    @media (prefers-color-scheme: dark){
+      :root{--bg:#0d1117;--card:#161b22;--text:#e6edf3;--muted:#8b949e;
+        --shadow:0 2px 8px rgba(0,0,0,.6);--shadow-strong:0 4px 18px -6px rgba(0,0,0,.85);}
+      .top-nav{background:rgba(13,17,23,0.85);border-bottom-color:#30363d;}
+      .nav-links a{color:var(--text);}
+      .nav-links a.active{outline-color:#1f6feb;}
+      .form-shell{border:1px solid #30363d;}
+      .form-embed-outer{border-color:#30363d;background:#161b22;}
+      .form-embed-outer.loading:before{background:#161b22;color:#88919b;}
+      footer{color:#768390;}
+      .nav-toggle span,.nav-toggle span:before,.nav-toggle span:after{background:#e6edf3;}
+    }
+
+    @media (max-width:640px){
+      .form-shell{padding:36px 20px 46px;}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Unified Navigation -->
+  <nav class="top-nav">
+    <div class="wrap nav-inner">
+      <a href="index.html#about" class="brand">
+        <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub Logo">
+        Copilot Event Lyngby
+      </a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false"><span></span></button>
+      <ul class="nav-links" id="siteNav">
+        <li><a href="index.html#about" class="nav-link">About</a></li>
+        <li><a href="index.html#agenda" class="nav-link">Agenda</a></li>
+        <li><a href="index.html#highlights" class="nav-link">Highlights</a></li>
+        <li><a href="index.html#location" class="nav-link">Location</a></li>
+        <li><a href="index.html#speakers" class="nav-link">Speakers</a></li>
+        <li><a href="register.html" class="nav-link active">Register</a></li>
+      </ul>
+      <a href="register.html" class="register-small">Register</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <header class="hero-register">
+      <h1>Register</h1>
+      <p class="lede">
+        Complete this short form to secure your seat. You’ll receive a confirmation email and a reminder before the event.
+        Capacity is limited—register early.
+      </p>
+    </header>
+
+    <div class="form-shell" id="registrationContainer">
+      <h2>Registration Form</h2>
+      <div class="form-meta">
+        Captures work email, name, job title, company size, optional marketing consent, and required acknowledgment.
+      </div>
+
+      <div class="form-embed-outer loading" id="formOuter">
+        <div class="form-scale-wrapper" id="formScaler">
+          <!-- Replace YOUR_GOOGLE_FORM_ID below -->
+          <iframe
+            id="googleFormIframe"
+            class="google-form"
+            src="https://forms.gle/VHdejjDzqTuPVjfR8?embedded=true"
+            allowfullscreen
+            loading="lazy"
+            title="Copilot Event Registration"
+            onload="document.getElementById('formOuter').classList.remove('loading');"
+          ></iframe>
+        </div>
+        <noscript style="display:block;text-align:center;padding:20px;font-size:.9rem;">
+          JavaScript is disabled. Open the form directly:
+          <a href="https://forms.gle/VHdejjDzqTuPVjfR8" target="_blank" rel="noopener">Open Google Form</a>
+        </noscript>
+      </div>
+
+      <p class="form-note">
+        Form served securely from Google Forms. Scaling applied on small screens to avoid horizontal scrolling.
+      </p>
+    </div>
+  </main>
+
+  <footer>
+    © 2025 GitHub Copilot Event – Microsoft Lyngby.
+  </footer>
+
+  <script>
+    /* NAV behavior (copied from index) */
+    const navLinks = document.querySelectorAll('.nav-link');
+    const toggleBtn = document.querySelector('.nav-toggle');
+    toggleBtn.addEventListener('click', ()=>{
+      document.body.classList.toggle('nav-open');
+      const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+      toggleBtn.setAttribute('aria-expanded', String(!expanded));
+    });
+    navLinks.forEach(link=>{
+      link.addEventListener('click', ()=>{
+        if(window.matchMedia('(max-width:880px)').matches){
+          document.body.classList.remove('nav-open');
+          toggleBtn.setAttribute('aria-expanded','false');
+        }
+      });
+    });
+    document.addEventListener('keydown', e=>{
+      if(e.key==='Escape' && document.body.classList.contains('nav-open')){
+        document.body.classList.remove('nav-open');
+        toggleBtn.setAttribute('aria-expanded','false');
+        toggleBtn.focus();
+      }
+    });
+
+    /* Responsive Google Form scaler
+       - Google Forms embed has a fixed intrinsic width (~640px).
+       - We scale it down proportionally on small screens to avoid horizontal scroll,
+         while keeping full quality on wider screens.
+       - Adjust FORM_BASE_HEIGHT after form finalization.
+    */
+    (function(){
+      const BASE_WIDTH = 640;              // native form width
+      const BASE_HEIGHT = 1800;            // approximate; adjust after final form
+      const breakpoint = 700;              // start scaling below this width
+      const scaler = document.getElementById('formScaler');
+      const iframe = document.getElementById('googleFormIframe');
+
+      function resizeForm(){
+        const available = scaler.clientWidth;
+        if(!available) return;
+
+        if(window.innerWidth < breakpoint){
+          const scale = Math.min(1, available / BASE_WIDTH);
+          iframe.style.transform = 'scale(' + scale + ')';
+          iframe.style.width = BASE_WIDTH + 'px';
+            iframe.style.height = BASE_HEIGHT + 'px';
+          scaler.style.height = (BASE_HEIGHT * scale) + 'px';
+        } else {
+          // desktop - reset
+          iframe.style.transform = 'none';
+          iframe.style.width = '100%'; // let it expand (will show its 640 center)
+          iframe.style.height = BASE_HEIGHT + 'px';
+          scaler.style.height = BASE_HEIGHT + 'px';
+        }
+      }
+
+      window.addEventListener('resize', resizeForm);
+      window.addEventListener('orientationchange', resizeForm);
+      window.addEventListener('load', resizeForm);
+    })();
+  </script>
+</body>
+</html>
