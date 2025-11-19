@@ -1,436 +1,616 @@
-import { useState, useEffect } from 'react'
-import { Sun, Moon, List, X, Calendar, Clock, MapPin, Users, Sparkle, Code, TrendUp, CheckCircle } from '@phosphor-icons/react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <title>GitHub Copilot Hackathon – SoftwareONE</title>
+    <meta
+      name="description"
+      content="GitHub Copilot Hackathon – SoftwareONE & Microsoft Vienna. Hands-on AI, agentic workflows, live demos and app building."
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-interface AgendaItem {
-  segment: string
-  title: string
-  description?: string
-  icon: React.ReactNode
-}
+    <!-- Social preview (optional, update image if you want) -->
+    <meta property="og:title" content="GitHub Copilot Hackathon – SoftwareONE" />
+    <meta
+      property="og:description"
+      content="Hands-on exploration of AI-powered developer productivity with GitHub Copilot."
+    />
+    <meta
+      property="og:image"
+      content="https://github.githubassets.com/images/modules/site/social-cards/github-social.png"
+    />
+    <meta property="og:type" content="website" />
 
-interface Speaker {
-  name: string
-  role: string
-  bio: string
-  image: string
-}
-
-function App() {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light')
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [activeSection, setActiveSection] = useState('about')
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light')
-    setTheme(initialTheme)
-    document.documentElement.classList.toggle('dark', initialTheme === 'dark')
-  }, [])
-
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light'
-    setTheme(newTheme)
-    localStorage.setItem('theme', newTheme)
-    document.documentElement.classList.toggle('dark', newTheme === 'dark')
-  }
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const sections = ['about', 'agenda', 'highlights', 'location', 'speakers']
-      const scrollPos = window.scrollY + 140
-
-      for (const sectionId of sections) {
-        const element = document.getElementById(sectionId)
-        if (element) {
-          const offsetTop = element.offsetTop
-          const offsetBottom = offsetTop + element.offsetHeight
-          if (scrollPos >= offsetTop && scrollPos < offsetBottom) {
-            setActiveSection(sectionId)
-            break
-          }
-        }
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              primary: '#6366f1', // indigo-500
+              accent: '#a855f7', // purple-500
+              success: '#22c55e', // green-500
+            },
+          },
+        },
       }
-    }
+    </script>
 
-    window.addEventListener('scroll', handleScroll)
-    handleScroll()
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+    <style>
+      /* Simple card shadows & utility tweaks */
+      .card {
+        @apply bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/70 dark:border-slate-800 shadow-sm;
+      }
+      .card-strong {
+        @apply bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-md;
+      }
+      .pill-badge {
+        @apply inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50">
+    <!-- NAVBAR -->
+    <nav
+      class="sticky top-0 z-50 bg-slate-50/80 dark:bg-slate-950/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800"
+    >
+      <div class="max-w-6xl mx-auto px-4 md:px-6">
+        <div class="flex items-center justify-between h-16 md:h-20">
+          <!-- Brand -->
+          <button
+            id="brandButton"
+            class="flex items-center gap-3 font-bold text-base md:text-lg tracking-tight hover:opacity-80 transition-opacity"
+          >
+            <img
+              src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+              alt="GitHub Logo"
+              class="w-8 h-8 md:w-9 md:h-9 dark:invert"
+            />
+            <span class="hidden sm:inline">Copilot Hackathon</span>
+            <span class="sm:hidden">Hackathon</span>
+          </button>
 
-  const agendaItems: AgendaItem[] = [
-    {
-      segment: '1',
-      title: 'Intro & Shaping the Future + AI in Action - Build your App',
-      description: "Dive into GitHub Copilot's Agentic features with a live introduction and showcase, followed by hands-on workshop of Agentic and AI capabilities driving innovation and productivity by creating an App with Copilot.",
-      icon: <Sparkle weight="duotone" className="text-primary" />
-    },
-    {
-      segment: '2',
-      title: 'Presentation',
-      description: 'Presentation of App Ideas from Workshop and Closing Note',
-      icon: <TrendUp weight="duotone" className="text-primary" />
-    }
-  ]
+          <!-- Desktop Nav -->
+          <div class="hidden lg:flex items-center gap-8">
+            <button data-nav="about" class="nav-link text-sm font-medium transition-colors">About</button>
+            <button data-nav="agenda" class="nav-link text-sm font-medium transition-colors">Agenda</button>
+            <button data-nav="highlights" class="nav-link text-sm font-medium transition-colors">Highlights</button>
+            <button data-nav="location" class="nav-link text-sm font-medium transition-colors">Location</button>
+            <button data-nav="speakers" class="nav-link text-sm font-medium transition-colors">Speakers</button>
 
-  const speakers: Speaker[] = [
-    {
-      name: 'Matthias Augustin',
-      role: 'Technology Advisor & Cloud Adventurer',
-      bio: 'Meet Matthias—a digital builder who loves turning messy ideas into clean, scalable systems. With years in product, tech, and customer experience, he\'s the guy who keeps teams aligned while pushing prototypes into something real. At our hackathon, he will help you to turn "cool concept" into "working solution."',
-      image: 'https://media.licdn.com/dms/image/v2/D4E03AQFzHJTQQEoEkA/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1700149788092?e=1747267200&v=beta&t=8VQmYqJxZqKxXoGqVBqKqVBqKxXoGqVBqKxXoGqVBqKxXoGqVBqKxXoGqVBqKxXoGqVBqKxXo'
-    },
-    {
-      name: 'Kay Schneutzer',
-      role: 'Presales Consultant & DATA & AI Guru',
-      bio: 'Say hello to Kay—a strategy-meets-data powerhouse who spots value where others see noise. With global experience in AI, Data Analytics, and Innovation, he is all about making smart ideas commercially meaningful. Kay will show us how Github Copilot accelerates this.',
-      image: 'https://i.imgur.com/placeholder-kay.jpg'
-    },
-    {
-      name: 'Gesa-Kristin Gandetzky',
-      role: 'Github Account Manager & Adoption Navigator',
-      bio: 'Meet Gesa—a GitHub Account Manager who thrives on bringing the right people, ideas, and resources together. She\'s the friendly bridge between teams, mentors, and GitHub experts, making sure every project gets exactly what it needs to move forward. At our hackathon, she\'s your go-to guide for unblocking challenges, finding the perfect support, and keeping the energy high while everyone builds something amazing.',
-      image: 'https://media.licdn.com/dms/image/v2/D4E03AQGqO6-6YxVKKQ/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1705063858717?e=1747267200&v=beta&t=VxOGLrJ3k8HFP_jWZJQoK5YQpKxXoGqVBqKxXoGqVBqKxXoGqVBqKxXoGqVBqKxXoGqVBqKxXo'
-    }
-  ]
-
-  const demoHighlights = [
-    { title: 'Agent Mode with Vision', description: 'Implementing complex UI features through natural language prompts' },
-    { title: 'MCP Server Integration', description: 'Extended capabilities for enhanced development workflows' },
-    { title: 'Automated Testing', description: 'Coverage analysis and quality assurance automation' },
-    { title: 'Security Scanning', description: 'AI-powered fixes and automated security improvements' },
-    { title: 'Hands-On Hackathon', description: 'Build your own app individually or in teams, then present your results' }
-  ]
-
-  const navItems = [
-    { id: 'about', label: 'About' },
-    { id: 'agenda', label: 'Agenda' },
-    { id: 'highlights', label: 'Highlights' },
-    { id: 'location', label: 'Location' },
-    { id: 'speakers', label: 'Speakers' }
-  ]
-
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId)
-    if (element) {
-      const offset = 80
-      const elementPosition = element.getBoundingClientRect().top
-      const offsetPosition = elementPosition + window.pageYOffset - offset
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      })
-    }
-    setMobileMenuOpen(false)
-  }
-
-  return (
-    <div className="min-h-screen bg-background text-foreground transition-colors duration-400">
-      <nav className="sticky top-0 z-50 bg-background/85 backdrop-blur-lg border-b border-border">
-        <div className="max-w-6xl mx-auto px-4 md:px-6">
-          <div className="flex items-center justify-between h-16 md:h-20">
-            <button
-              onClick={() => scrollToSection('about')}
-              className="flex items-center gap-3 font-bold text-base md:text-lg tracking-tight hover:opacity-80 transition-opacity"
+            <a
+              href="https://docs.google.com/forms/d/e/1FAIpQLSc62aHHMLmvRDQidvsnCijBuIv95qe33EP8oGGZC14zplFrZw/viewform?usp=dialog"
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              <img
-                src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
-                alt="GitHub Logo"
-                className="w-8 h-8 md:w-9 md:h-9 dark:invert"
-              />
-              <span className="hidden sm:inline">Copilot Hackathon</span>
-              <span className="sm:hidden">Hackathon</span>
+              <button
+                class="inline-flex items-center justify-center px-4 py-2 rounded-full text-sm font-semibold bg-primary text-white hover:bg-primary/90 shadow-lg transition"
+              >
+                Register
+              </button>
+            </a>
+          </div>
+
+          <!-- Right controls -->
+          <div class="flex items-center gap-2">
+            <!-- Theme toggle -->
+            <button
+              id="themeToggle"
+              class="inline-flex items-center justify-center w-9 h-9 rounded-full border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+              aria-label="Toggle theme"
+            >
+              <span id="themeIcon">🌙</span>
             </button>
 
-            <div className="hidden lg:flex items-center gap-8">
-              {navItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => scrollToSection(item.id)}
-                  className={`text-sm font-medium transition-colors hover:text-primary ${
-                    activeSection === item.id ? 'text-primary font-semibold' : 'text-foreground'
-                  }`}
-                >
-                  {item.label}
-                </button>
-              ))}
-              <a
-                href="https://docs.google.com/forms/d/e/1FAIpQLSc62aHHMLmvRDQidvsnCijBuIv95qe33EP8oGGZC14zplFrZw/viewform?usp=dialog"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-full shadow-lg">
-                  Register
-                </Button>
-              </a>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleTheme}
-                className="rounded-full"
-                aria-label="Toggle theme"
-              >
-                {theme === 'light' ? (
-                  <Moon weight="duotone" className="h-5 w-5" />
-                ) : (
-                  <Sun weight="duotone" className="h-5 w-5" />
-                )}
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden rounded-full"
-                aria-label="Toggle menu"
-              >
-                {mobileMenuOpen ? (
-                  <X className="h-6 w-6" />
-                ) : (
-                  <List className="h-6 w-6" />
-                )}
-              </Button>
-            </div>
+            <!-- Mobile menu toggle -->
+            <button
+              id="mobileToggle"
+              class="inline-flex lg:hidden items-center justify-center w-9 h-9 rounded-full border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+              aria-label="Toggle menu"
+            >
+              <span id="mobileIcon" class="text-xl">≡</span>
+            </button>
           </div>
-
-          {mobileMenuOpen && (
-            <div className="lg:hidden pb-4 space-y-2 animate-in slide-in-from-top">
-              {navItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => scrollToSection(item.id)}
-                  className={`block w-full text-left px-4 py-2 rounded-lg transition-colors ${
-                    activeSection === item.id
-                      ? 'bg-primary/10 text-primary font-semibold'
-                      : 'hover:bg-muted'
-                  }`}
-                >
-                  {item.label}
-                </button>
-              ))}
-              <a
-                href="https://docs.google.com/forms/d/e/1FAIpQLSc62aHHMLmvRDQidvsnCijBuIv95qe33EP8oGGZC14zplFrZw/viewform?usp=dialog"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block pt-2"
-              >
-                <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
-                  Register Now
-                </Button>
-              </a>
-            </div>
-          )}
         </div>
-      </nav>
 
-      <section id="about" className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-accent/5 to-background pointer-events-none" />
-        <div className="relative max-w-6xl mx-auto px-4 md:px-6 py-12 md:py-20">
-          <div className="grid lg:grid-cols-[1fr_420px] gap-8 md:gap-12 items-start">
-            <div className="space-y-6">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
-                GitHub Copilot Hackathon – SoftwareONE
-              </h1>
-              <p className="text-lg md:text-xl text-muted-foreground font-medium leading-relaxed max-w-3xl">
-                Join us for a focused, hands-on exploration of AI-powered developer productivity.
-                Discover how GitHub Copilot and the GitHub platform accelerate innovation, improve quality,
-                and transform the way engineering teams build and deliver software.
-              </p>
-              <a
-                href="https://docs.google.com/forms/d/e/1FAIpQLSc62aHHMLmvRDQidvsnCijBuIv95qe33EP8oGGZC14zplFrZw/viewform?usp=dialog"
-                target="_blank"
-                rel="noopener noreferrer"
+        <!-- Mobile menu -->
+        <div id="mobileMenu" class="hidden lg:hidden pb-4 space-y-2 animate-[fadeIn_0.2s_ease-out]">
+          <button
+            data-nav="about"
+            class="nav-link-mobile block w-full text-left px-4 py-2 rounded-lg text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+          >
+            About
+          </button>
+          <button
+            data-nav="agenda"
+            class="nav-link-mobile block w-full text-left px-4 py-2 rounded-lg text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+          >
+            Agenda
+          </button>
+          <button
+            data-nav="highlights"
+            class="nav-link-mobile block w-full text-left px-4 py-2 rounded-lg text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+          >
+            Highlights
+          </button>
+          <button
+            data-nav="location"
+            class="nav-link-mobile block w-full text-left px-4 py-2 rounded-lg text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+          >
+            Location
+          </button>
+          <button
+            data-nav="speakers"
+            class="nav-link-mobile block w-full text-left px-4 py-2 rounded-lg text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+          >
+            Speakers
+          </button>
+          <a
+            href="https://docs.google.com/forms/d/e/1FAIpQLSc62aHHMLmvRDQidvsnCijBuIv95qe33EP8oGGZC14zplFrZw/viewform?usp=dialog"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="block pt-2"
+          >
+            <button
+              class="w-full inline-flex items-center justify-center px-4 py-2 rounded-full text-sm font-semibold bg-primary text-white hover:bg-primary/90 shadow-lg transition"
+            >
+              Register Now
+            </button>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ABOUT / HERO -->
+    <section id="about" class="relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-b from-primary/5 via-accent/5 to-slate-50 dark:to-slate-950 pointer-events-none"></div>
+      <div class="relative max-w-6xl mx-auto px-4 md:px-6 py-12 md:py-20">
+        <div class="grid lg:grid-cols-[1fr_420px] gap-8 md:gap-12 items-start">
+          <div class="space-y-6">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
+              GitHub Copilot Hackathon – SoftwareONE
+            </h1>
+            <p class="text-lg md:text-xl text-slate-600 dark:text-slate-300 font-medium leading-relaxed max-w-3xl">
+              Join us for a focused, hands-on exploration of AI-powered developer productivity. Discover how GitHub
+              Copilot and the GitHub platform accelerate innovation, improve quality, and transform the way engineering
+              teams build and deliver software.
+            </p>
+            <a
+              href="https://docs.google.com/forms/d/e/1FAIpQLSc62aHHMLmvRDQidvsnCijBuIv95qe33EP8oGGZC14zplFrZw/viewform?usp=dialog"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <button
+                class="inline-flex items-center justify-center px-6 py-3 rounded-xl text-base font-semibold text-white bg-gradient-to-r from-primary to-accent shadow-xl hover:shadow-2xl hover:scale-[1.02] transition"
               >
-                <Button
-                  size="lg"
-                  className="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white font-semibold shadow-xl hover:shadow-2xl transition-all hover:scale-105 rounded-xl"
-                >
-                  Register Now
-                </Button>
-              </a>
-            </div>
-
-            <Card className="shadow-xl">
-              <CardContent className="p-6 space-y-4">
-                <div className="flex items-start gap-3">
-                  <Calendar weight="duotone" className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Date</p>
-                    <p className="font-semibold">December 15, 2025</p>
-                  </div>
-                </div>
-                <Separator />
-                <div className="flex items-start gap-3">
-                  <Clock weight="duotone" className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Time</p>
-                    <p className="font-semibold">9:00 AM – 5:00 PM</p>
-                  </div>
-                </div>
-                <Separator />
-                <div className="flex items-start gap-3">
-                  <MapPin weight="duotone" className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Venue</p>
-                    <p className="font-semibold">Microsoft Vienna, Am Europlatz 3<br />1120 Vienna, Austria</p>
-                  </div>
-                </div>
-                <Separator />
-                <div className="flex items-start gap-3">
-                  <Users weight="duotone" className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Format</p>
-                    <p className="font-semibold">Workshop, Hands-On Activity & Presentation</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                Register Now
+              </button>
+            </a>
           </div>
 
-          <Card className="mt-12 shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-2xl md:text-3xl">Event Flow</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-2 gap-6">
+          <!-- Info card -->
+          <div class="card-strong">
+            <div class="p-6 space-y-4">
+              <div class="flex items-start gap-3">
+                <div class="text-xl mt-1">📅</div>
                 <div>
-                  <ul className="space-y-2 text-sm md:text-base font-medium">
-                    <li><strong>Doors Open:</strong> 9:00 AM</li>
-                    <li><strong>Event Start:</strong> 9:30 AM</li>
-                    <li><strong>Sessions:</strong> 9:30 AM – 5:00 PM</li>
-                  </ul>
-                </div>
-                <div className="text-sm md:text-base text-muted-foreground leading-relaxed font-medium">
-                  A comprehensive demonstration of GitHub Copilot's advanced AI capabilities using the OctoCat Supply web application.
-                  This demo showcases Copilot Agent Mode with Vision for implementing complex UI features, MCP server integration for extended capabilities,
-                  automated testing with coverage analysis, security scanning with AI-powered fixes, and DevOps automation—all through natural language prompts.
+                  <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
+                    Date
+                  </p>
+                  <p class="font-semibold">December 15, 2025</p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      <section id="agenda" className="max-w-6xl mx-auto px-4 md:px-6 py-12 md:py-16">
-        <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-8">Agenda</h2>
-        <div className="grid sm:grid-cols-2 gap-4">
-          {agendaItems.map((item, index) => (
-            <Card key={index} className="relative overflow-hidden group hover:shadow-lg transition-shadow">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <CardContent className="p-5 relative">
-                <div className="flex items-start gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center flex-shrink-0 shadow-sm">
-                    {item.icon}
-                  </div>
+              <hr class="border-slate-200 dark:border-slate-800" />
+              <div class="flex items-start gap-3">
+                <div class="text-xl mt-1">⏰</div>
+                <div>
+                  <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
+                    Time
+                  </p>
+                  <p class="font-semibold">9:00 AM – 5:00 PM</p>
                 </div>
-                <h3 className="font-bold text-base mb-1 leading-tight">
-                  {item.title}
-                </h3>
-                {item.description && (
-                  <p className="text-xs text-muted-foreground leading-relaxed">{item.description}</p>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      <section id="highlights" className="max-w-6xl mx-auto px-4 md:px-6 py-12 md:py-16">
-        <Card className="shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-2xl md:text-3xl">Hackathon Highlights</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {demoHighlights.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex items-start gap-4 bg-muted/30 rounded-xl p-4 hover:bg-muted/50 transition-colors"
-                >
-                  <div className="w-7 h-7 rounded-full bg-success flex items-center justify-center flex-shrink-0 shadow-sm">
-                    <CheckCircle weight="fill" className="w-5 h-5 text-success-foreground" />
-                  </div>
-                  <div className="flex-1 text-sm md:text-base">
-                    <span className="font-semibold">{item.title}:</span>{' '}
-                    <span className="text-muted-foreground">{item.description}</span>
-                  </div>
+              </div>
+              <hr class="border-slate-200 dark:border-slate-800" />
+              <div class="flex items-start gap-3">
+                <div class="text-xl mt-1">📍</div>
+                <div>
+                  <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
+                    Venue
+                  </p>
+                  <p class="font-semibold">
+                    Microsoft Vienna, Am Europlatz 3
+                    <br />
+                    1120 Vienna, Austria
+                  </p>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </section>
-
-      <section id="location" className="max-w-6xl mx-auto px-4 md:px-6 py-12 md:py-16">
-        <div className="grid lg:grid-cols-2 gap-8 items-start">
-          <div className="space-y-4">
-            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">Location</h2>
-            <div>
-              <p className="text-lg font-semibold mb-2">Microsoft Vienna</p>
-              <p className="text-base text-muted-foreground font-medium italic leading-relaxed">
-                Am Europlatz 3, 1120 Vienna, Austria
-              </p>
-              <p className="text-sm text-muted-foreground mt-4 font-medium">
-                Arrive early to grab a coffee and connect before we begin.
-              </p>
+              </div>
+              <hr class="border-slate-200 dark:border-slate-800" />
+              <div class="flex items-start gap-3">
+                <div class="text-xl mt-1">👥</div>
+                <div>
+                  <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
+                    Format
+                  </p>
+                  <p class="font-semibold">Workshop, Hands-On Activity &amp; Presentation</p>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="rounded-2xl overflow-hidden shadow-xl bg-card h-[300px] md:h-[420px]">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1695.529419666575!2d16.33197421730079!3d48.17217639365838!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x476da8414fa1f10b%3A0x66bbfae0c27b34a!2sMicrosoft%20%C3%96sterreich!5e0!3m2!1sde!2snl!4v1763566243831!5m2!1sde!2snl"
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Microsoft Vienna Location"
-            />
+        </div>
+
+        <!-- Event Flow -->
+        <div class="card mt-12">
+          <div class="p-6 md:p-8">
+            <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight mb-4">Event Flow</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <ul class="space-y-2 text-sm md:text-base font-medium">
+                  <li><strong>Doors Open:</strong> 9:00 AM</li>
+                  <li><strong>Event Start:</strong> 9:30 AM</li>
+                  <li><strong>Sessions:</strong> 9:30 AM – 5:00 PM</li>
+                </ul>
+              </div>
+              <div class="text-sm md:text-base text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
+                A comprehensive demonstration of GitHub Copilot&apos;s advanced AI capabilities using the OctoCat
+                Supply web application. See Copilot Agent Mode with Vision, MCP server integration, automated testing
+                and coverage, security scanning with AI-powered fixes, and DevOps automation—all through natural
+                language prompts.
+              </div>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section id="speakers" className="max-w-6xl mx-auto px-4 md:px-6 py-12 md:py-16 pb-20">
-        <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-8">Speakers</h2>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {speakers.map((speaker, index) => (
-            <Card key={index} className="relative overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none" />
-              <CardContent className="p-6 md:p-8 text-center relative">
-                <div className="w-24 h-24 md:w-32 md:h-32 mx-auto mb-4 rounded-full overflow-hidden border-4 border-background shadow-lg bg-muted">
-                  <img
-                    src={speaker.image}
-                    alt={speaker.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <h3 className="text-lg md:text-xl font-bold mb-2 tracking-tight">{speaker.name}</h3>
-                <Badge className="mb-4 bg-primary/10 text-primary hover:bg-primary/20 text-xs font-semibold uppercase tracking-wide">
-                  {speaker.role}
-                </Badge>
-                <p className="text-xs md:text-sm text-muted-foreground leading-relaxed text-left font-medium">
-                  {speaker.bio}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
+    <!-- AGENDA -->
+    <section id="agenda" class="max-w-6xl mx-auto px-4 md:px-6 py-12 md:py-16">
+      <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-8">Agenda</h2>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <!-- Item 1 -->
+        <div class="card relative overflow-hidden group hover:shadow-lg transition-shadow">
+          <div
+            class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+          ></div>
+          <div class="p-5 relative">
+            <div class="flex items-start gap-3 mb-3">
+              <div
+                class="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center shadow-sm"
+              >
+                <span class="text-lg">✨</span>
+              </div>
+            </div>
+            <h3 class="font-bold text-base mb-1 leading-tight">
+              Intro &amp; Shaping the Future + AI in Action – Build your App
+            </h3>
+            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+              Dive into GitHub Copilot&apos;s agentic features with a live introduction and showcase, followed by a
+              hands-on workshop exploring AI capabilities that drive innovation and productivity by creating an app with
+              Copilot.
+            </p>
+          </div>
         </div>
-      </section>
 
-      <footer className="text-center py-12 md:py-16 text-xs md:text-sm text-muted-foreground border-t border-border">
-        <p>© 2025 GitHub Copilot Hackathon – SoftwareONE. All rights reserved.</p>
-      </footer>
-    </div>
-  )
-}
+        <!-- Item 2 -->
+        <div class="card relative overflow-hidden group hover:shadow-lg transition-shadow">
+          <div
+            class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+          ></div>
+          <div class="p-5 relative">
+            <div class="flex items-start gap-3 mb-3">
+              <div
+                class="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center shadow-sm"
+              >
+                <span class="text-lg">📈</span>
+              </div>
+            </div>
+            <h3 class="font-bold text-base mb-1 leading-tight">Presentation</h3>
+            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+              Presentation of app ideas from the workshop and closing note.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
 
-export default App
+    <!-- HIGHLIGHTS -->
+    <section id="highlights" class="max-w-6xl mx-auto px-4 md:px-6 py-12 md:py-16">
+      <div class="card-strong">
+        <div class="p-6 md:p-8">
+          <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight mb-4">Hackathon Highlights</h2>
+          <div class="space-y-3">
+            <!-- highlight 1 -->
+            <div
+              class="flex items-start gap-4 bg-slate-100/70 dark:bg-slate-800/60 rounded-xl p-4 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            >
+              <div class="w-7 h-7 rounded-full bg-success flex items-center justify-center flex-shrink-0 shadow-sm">
+                <span class="text-white text-sm font-bold">✓</span>
+              </div>
+              <div class="flex-1 text-sm md:text-base">
+                <span class="font-semibold">Agent Mode with Vision:</span>
+                <span class="text-slate-600 dark:text-slate-300">
+                  &nbsp;Implement complex UI features through natural language prompts.
+                </span>
+              </div>
+            </div>
+            <!-- 2 -->
+            <div
+              class="flex items-start gap-4 bg-slate-100/70 dark:bg-slate-800/60 rounded-xl p-4 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            >
+              <div class="w-7 h-7 rounded-full bg-success flex items-center justify-center flex-shrink-0 shadow-sm">
+                <span class="text-white text-sm font-bold">✓</span>
+              </div>
+              <div class="flex-1 text-sm md:text-base">
+                <span class="font-semibold">MCP Server Integration:</span>
+                <span class="text-slate-600 dark:text-slate-300">
+                  &nbsp;Extended capabilities for richer development workflows.
+                </span>
+              </div>
+            </div>
+            <!-- 3 -->
+            <div
+              class="flex items-start gap-4 bg-slate-100/70 dark:bg-slate-800/60 rounded-xl p-4 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            >
+              <div class="w-7 h-7 rounded-full bg-success flex items-center justify-center flex-shrink-0 shadow-sm">
+                <span class="text-white text-sm font-bold">✓</span>
+              </div>
+              <div class="flex-1 text-sm md:text-base">
+                <span class="font-semibold">Automated Testing:</span>
+                <span class="text-slate-600 dark:text-slate-300">
+                  &nbsp;Coverage analysis and quality assurance automation.
+                </span>
+              </div>
+            </div>
+            <!-- 4 -->
+            <div
+              class="flex items-start gap-4 bg-slate-100/70 dark:bg-slate-800/60 rounded-xl p-4 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            >
+              <div class="w-7 h-7 rounded-full bg-success flex items-center justify-center flex-shrink-0 shadow-sm">
+                <span class="text-white text-sm font-bold">✓</span>
+              </div>
+              <div class="flex-1 text-sm md:text-base">
+                <span class="font-semibold">Security Scanning:</span>
+                <span class="text-slate-600 dark:text-slate-300">
+                  &nbsp;AI-powered fixes and automated security improvements.
+                </span>
+              </div>
+            </div>
+            <!-- 5 -->
+            <div
+              class="flex items-start gap-4 bg-slate-100/70 dark:bg-slate-800/60 rounded-xl p-4 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            >
+              <div class="w-7 h-7 rounded-full bg-success flex items-center justify-center flex-shrink-0 shadow-sm">
+                <span class="text-white text-sm font-bold">✓</span>
+              </div>
+              <div class="flex-1 text-sm md:text-base">
+                <span class="font-semibold">Hands-On Hackathon:</span>
+                <span class="text-slate-600 dark:text-slate-300">
+                  &nbsp;Build your own app individually or in teams, then present your results.
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
+    <!-- LOCATION -->
+    <section id="location" class="max-w-6xl mx-auto px-4 md:px-6 py-12 md:py-16">
+      <div class="grid lg:grid-cols-2 gap-8 items-start">
+        <div class="space-y-4">
+          <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight">Location</h2>
+          <div>
+            <p class="text-lg font-semibold mb-2">Microsoft Vienna</p>
+            <p class="text-base text-slate-600 dark:text-slate-300 font-medium italic leading-relaxed">
+              Am Europlatz 3, 1120 Vienna, Austria
+            </p>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mt-4 font-medium">
+              Arrive early to grab a coffee and connect before we begin.
+            </p>
+          </div>
+        </div>
+        <div class="rounded-2xl overflow-hidden shadow-xl bg-slate-200 dark:bg-slate-900 h-[300px] md:h-[420px]">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1695.529419666575!2d16.33197421730079!3d48.17217639365838!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x476da8414fa1f10b%3A0x66bbfae0c27b34a!2sMicrosoft%20%C3%96sterreich!5e0!3m2!1sde!2snl!4v1763566243831!5m2!1sde!2snl"
+            width="100%"
+            height="100%"
+            style="border: 0"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            title="Microsoft Vienna Location"
+          ></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- SPEAKERS -->
+    <section id="speakers" class="max-w-6xl mx-auto px-4 md:px-6 py-12 md:py-16 pb-20">
+      <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-8">Speakers</h2>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <!-- Matthias -->
+        <div class="card relative overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+          <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none"></div>
+          <div class="p-6 md:p-8 text-center relative">
+            <div
+              class="w-24 h-24 md:w-32 md:h-32 mx-auto mb-4 rounded-full overflow-hidden border-4 border-slate-50 dark:border-slate-900 shadow-lg bg-slate-200 dark:bg-slate-700"
+            >
+              <img
+                src="https://media.licdn.com/dms/image/v2/D4E03AQFzHJTQQEoEkA/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1700149788092?e=1747267200&v=beta&t=8VQmYqJxZqKxXoGqVBqKqVBqKxXoGqVBqKxXoGqVBqKxXoGqVBqKxXoGqVBqKxXoGqVBqKxXo"
+                alt="Matthias Augustin"
+                class="w-full h-full object-cover"
+              />
+            </div>
+            <h3 class="text-lg md:text-xl font-bold mb-2 tracking-tight">Matthias Augustin</h3>
+            <div class="pill-badge mb-4 bg-primary/10 text-primary">Technology Advisor &amp; Cloud Adventurer</div>
+            <p class="text-xs md:text-sm text-slate-600 dark:text-slate-300 leading-relaxed text-left font-medium">
+              Meet Matthias—a digital builder who loves turning messy ideas into clean, scalable systems. With years in
+              product, tech, and customer experience, he&apos;s the guy who keeps teams aligned while turning prototypes
+              into something real. At our hackathon, he&apos;ll help you turn &quot;cool concept&quot; into
+              &quot;working solution&quot;.
+            </p>
+          </div>
+        </div>
+
+        <!-- Kay -->
+        <div class="card relative overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+          <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none"></div>
+          <div class="p-6 md:p-8 text-center relative">
+            <div
+              class="w-24 h-24 md:w-32 md:h-32 mx-auto mb-4 rounded-full overflow-hidden border-4 border-slate-50 dark:border-slate-900 shadow-lg bg-slate-200 dark:bg-slate-700"
+            >
+              <!-- Placeholder image, swap for a real one when you have it -->
+              <img
+                src="https://i.imgur.com/placeholder-kay.jpg"
+                alt="Kay Schneutzer"
+                class="w-full h-full object-cover"
+              />
+            </div>
+            <h3 class="text-lg md:text-xl font-bold mb-2 tracking-tight">Kay Schneutzer</h3>
+            <div class="pill-badge mb-4 bg-primary/10 text-primary">Presales Consultant &amp; DATA &amp; AI Guru</div>
+            <p class="text-xs md:text-sm text-slate-600 dark:text-slate-300 leading-relaxed text-left font-medium">
+              Say hello to Kay—a strategy-meets-data powerhouse who spots value where others see noise. With global
+              experience in AI, data analytics, and innovation, he&apos;s all about making smart ideas commercially
+              meaningful. Kay will show us how GitHub Copilot accelerates this.
+            </p>
+          </div>
+        </div>
+
+        <!-- Gesa -->
+        <div class="card relative overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+          <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none"></div>
+          <div class="p-6 md:p-8 text-center relative">
+            <div
+              class="w-24 h-24 md:w-32 md:h-32 mx-auto mb-4 rounded-full overflow-hidden border-4 border-slate-50 dark:border-slate-900 shadow-lg bg-slate-200 dark:bg-slate-700"
+            >
+              <img
+                src="https://media.licdn.com/dms/image/v2/D4E03AQGqO6-6YxVKKQ/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1705063858717?e=1747267200&v=beta&t=VxOGLrJ3k8HFP_jWZJQoK5YQpKxXoGqVBqKxXoGqVBqKxXoGqVBqKxXoGqVBqKxXoGqVBqKxXo"
+                alt="Gesa-Kristin Gandetzky"
+                class="w-full h-full object-cover"
+              />
+            </div>
+            <h3 class="text-lg md:text-xl font-bold mb-2 tracking-tight">Gesa-Kristin Gandetzky</h3>
+            <div class="pill-badge mb-4 bg-primary/10 text-primary">GitHub Account Manager &amp; Adoption Navigator</div>
+            <p class="text-xs md:text-sm text-slate-600 dark:text-slate-300 leading-relaxed text-left font-medium">
+              Meet Gesa—thriving on bringing the right people, ideas, and resources together. She&apos;s the friendly
+              bridge between teams, mentors, and GitHub experts, making sure every project gets exactly what it needs to
+              move forward. At our hackathon, she&apos;s your go-to guide for unblocking challenges, finding the perfect
+              support, and keeping the energy high while everyone builds something amazing.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="text-center py-12 md:py-16 text-xs md:text-sm text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800">
+      <p>© 2025 GitHub Copilot Hackathon – SoftwareONE. All rights reserved.</p>
+    </footer>
+
+    <!-- SCRIPT: theme, nav scroll, active section, mobile menu -->
+    <script>
+      // Smooth scroll helper
+      function scrollToSection(id) {
+        const el = document.getElementById(id)
+        if (!el) return
+        const yOffset = 80
+        const y = el.getBoundingClientRect().top + window.pageYOffset - yOffset
+        window.scrollTo({ top: y, behavior: 'smooth' })
+      }
+
+      // Theme handling
+      const themeToggle = document.getElementById('themeToggle')
+      const themeIcon = document.getElementById('themeIcon')
+
+      function setTheme(mode) {
+        const root = document.documentElement
+        if (mode === 'dark') {
+          root.classList.add('dark')
+          themeIcon.textContent = '☀️'
+        } else {
+          root.classList.remove('dark')
+          themeIcon.textContent = '🌙'
+        }
+        localStorage.setItem('theme', mode)
+      }
+
+      ;(() => {
+        const saved = localStorage.getItem('theme')
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+        const initial = saved || (prefersDark ? 'dark' : 'light')
+        setTheme(initial)
+      })()
+
+      themeToggle.addEventListener('click', () => {
+        const isDark = document.documentElement.classList.contains('dark')
+        setTheme(isDark ? 'light' : 'dark')
+      })
+
+      // Brand click scroll to about
+      document.getElementById('brandButton').addEventListener('click', () => scrollToSection('about'))
+
+      // Nav links
+      const navButtons = document.querySelectorAll('[data-nav]')
+      const mobileMenu = document.getElementById('mobileMenu')
+      const mobileToggle = document.getElementById('mobileToggle')
+      const mobileIcon = document.getElementById('mobileIcon')
+
+      navButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-nav')
+          if (id) scrollToSection(id)
+          if (!btn.classList.contains('nav-link')) {
+            // mobile link
+            mobileMenu.classList.add('hidden')
+            mobileIcon.textContent = '≡'
+          }
+        })
+      })
+
+      // Mobile menu toggle
+      mobileToggle.addEventListener('click', () => {
+        const isHidden = mobileMenu.classList.contains('hidden')
+        if (isHidden) {
+          mobileMenu.classList.remove('hidden')
+          mobileIcon.textContent = '✕'
+        } else {
+          mobileMenu.classList.add('hidden')
+          mobileIcon.textContent = '≡'
+        }
+      })
+
+      // Active section highlighting (desktop)
+      const desktopNavLinks = document.querySelectorAll('.nav-link')
+      const sectionIds = ['about', 'agenda', 'highlights', 'location', 'speakers']
+
+      function setActiveNav() {
+        const scrollPos = window.scrollY + 140
+        let currentId = 'about'
+
+        sectionIds.forEach((id) => {
+          const el = document.getElementById(id)
+          if (!el) return
+          const top = el.offsetTop
+          const bottom = top + el.offsetHeight
+          if (scrollPos >= top && scrollPos < bottom) {
+            currentId = id
+          }
+        })
+
+        desktopNavLinks.forEach((btn) => {
+          const id = btn.getAttribute('data-nav')
+          if (id === currentId) {
+            btn.classList.add('text-primary', 'font-semibold')
+            btn.classList.remove('text-slate-900', 'dark:text-slate-100')
+          } else {
+            btn.classList.remove('text-primary', 'font-semibold')
+          }
+        })
+      }
+
+      window.addEventListener('scroll', setActiveNav)
+      window.addEventListener('load', setActiveNav)
+    </script>
+  </body>
+</html>
