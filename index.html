@@ -1,653 +1,436 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Github Hackathon </title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="GitHub Copilot Hackathon – Microsoft Vienna. Explore AI-powered developer productivity, live demos, strategy, and adoption insights." />
+import { useState, useEffect } from 'react'
+import { Sun, Moon, List, X, Calendar, Clock, MapPin, Users, Sparkle, Code, TrendUp, CheckCircle } from '@phosphor-icons/react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
 
-  <!-- Open Graph / Social Preview (update the image URL to a real hosted image, 1200x630) -->
-  <meta property="og:title" content="GitHub Copilot Hackathon - Microsoft Vienna">
-  <meta property="og:description" content="Focused, hands-on exploration of AI-powered developer productivity: vision, live demos, strategy, adoption & networking.">
-  <meta property="og:image" content="https://amraljarhi.github.io/copilot-event-lyngby/hero-social.png">
-  <meta property="og:image:alt" content="GitHub Copilot Hackathon – Microsoft Vienna">
-  <meta property="og:url" content="https://gh.io/AAxeuh4">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="GitHub Copilot Hackathon">
+interface AgendaItem {
+  segment: string
+  title: string
+  description?: string
+  icon: React.ReactNode
+}
 
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="GitHub Copilot Event – Microsoft Viena">
-  <meta name="twitter:description" content="Focused, hands-on exploration of AI-powered developer productivity: vision, demos, strategy, adoption & networking.">
-  <meta name="twitter:image" content="https://amraljarhi.github.io/copilot-event-lyngby/hero-social.png">
+interface Speaker {
+  name: string
+  role: string
+  bio: string
+  image: string
+}
 
-  <!-- Optional theme color -->
-  <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+function App() {
+  const [theme, setTheme] = useState<'light' | 'dark'>('light')
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [activeSection, setActiveSection] = useState('about')
 
-  <link rel="canonical" href="https://gh.io/AAxeuh4" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <style>
-    /******************************************************************
-     * LIGHT THEME TOKENS
-     ******************************************************************/
-    :root {
-      --bg: #f6f8fa;
-      --card-bg: #ffffff;
-      --brand: #8257e5;
-      --brand-hover: #6c38d9;
-      --accent-green: #1f883d;
-      --text: #1d2228;
-      --text-strong: #151b21;
-      --muted: #5d6470;
-      --muted-soft: #6b7380;
-      --radius-l: 18px;
-      --shadow: 0 2px 6px rgba(0,0,0,0.04), 0 4px 18px -4px rgba(0,0,0,0.06);
-      --shadow-strong: 0 2px 10px rgba(0,0,0,0.07), 0 6px 22px -6px rgba(0,0,0,0.12);
-      --nav-height: 66px;
-      --outline-focus: #1158c7;
-      --bubble-accent: rgba(130,87,229,0.10);
-      --bubble-accent-soft: rgba(130,87,229,0.06);
-      scroll-behavior: smooth;
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light')
+    setTheme(initialTheme)
+    document.documentElement.classList.toggle('dark', initialTheme === 'dark')
+  }, [])
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light'
+    setTheme(newTheme)
+    localStorage.setItem('theme', newTheme)
+    document.documentElement.classList.toggle('dark', newTheme === 'dark')
+  }
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ['about', 'agenda', 'highlights', 'location', 'speakers']
+      const scrollPos = window.scrollY + 140
+
+      for (const sectionId of sections) {
+        const element = document.getElementById(sectionId)
+        if (element) {
+          const offsetTop = element.offsetTop
+          const offsetBottom = offsetTop + element.offsetHeight
+          if (scrollPos >= offsetTop && scrollPos < offsetBottom) {
+            setActiveSection(sectionId)
+            break
+          }
+        }
+      }
     }
 
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: 'Inter','Segoe UI',Arial,sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
+    window.addEventListener('scroll', handleScroll)
+    handleScroll()
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  const agendaItems: AgendaItem[] = [
+    {
+      segment: '1',
+      title: 'Intro & Shaping the Future + AI in Action - Build your App',
+      description: "Dive into GitHub Copilot's Agentic features with a live introduction and showcase, followed by hands-on workshop of Agentic and AI capabilities driving innovation and productivity by creating an App with Copilot.",
+      icon: <Sparkle weight="duotone" className="text-primary" />
+    },
+    {
+      segment: '2',
+      title: 'Presentation',
+      description: 'Presentation of App Ideas from Workshop and Closing Note',
+      icon: <TrendUp weight="duotone" className="text-primary" />
     }
-    a { color: var(--brand); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    img { max-width: 100%; height: auto; display: block; }
-    .wrap { width:100%; max-width:1080px; margin:0 auto; padding-inline:clamp(1rem,4vw,2.5rem); }
-    section { scroll-margin-top: calc(var(--nav-height) + 14px); }
+  ]
 
-    /******************************************************************
-     * NAV
-     ******************************************************************/
-    .top-nav { position:sticky; top:0; z-index:1000; background:rgba(255,255,255,0.85); backdrop-filter:blur(10px); border-bottom:1px solid #e2e6eb; }
-    .nav-inner { height:var(--nav-height); display:flex; align-items:center; gap:clamp(1rem,4vw,3.5rem); }
-    .brand { display:flex; align-items:center; gap:.65rem; font-weight:700; font-size:1.02rem; letter-spacing:-.5px; color:var(--text); text-decoration:none; white-space:nowrap; }
-    .brand img { width:34px; height:34px; }
-    .nav-links { display:flex; gap:30px; margin:0; padding:0; list-style:none; font-weight:500; flex:1; }
-    .nav-links a { padding:8px 4px; color:var(--text); border-radius:6px; font-size:0.95rem; transition:color .18s; }
-    .nav-links a:hover { color: var(--brand); }
-    .nav-links a.active { outline:2px solid var(--outline-focus); outline-offset:2px; font-weight:600; }
-    .register-small { background:var(--brand); color:#fff; padding:10px 20px; border-radius:999px; font-weight:600; font-size:0.85rem; box-shadow:0 2px 8px rgba(130,87,229,.42); transition:background .18s, transform .18s; white-space:nowrap; }
-    .register-small:hover { background:var(--brand-hover); transform:translateY(-2px); text-decoration:none; }
-    .nav-toggle { display:none; background:none; border:none; cursor:pointer; padding:8px 10px; border-radius:10px; }
-    .nav-toggle span { display:block; width:24px; height:2.5px; background:#24292f; position:relative; border-radius:2px; transition:transform .35s; }
-    .nav-toggle span:before,.nav-toggle span:after { content:""; position:absolute; inset:0; height:2.5px; background:#24292f; border-radius:2px; transition:transform .35s, top .35s; }
-    .nav-toggle span:before { top:-7px; }
-    .nav-toggle span:after { top:7px; }
-    .nav-open .nav-toggle span { background:transparent; }
-    .nav-open .nav-toggle span:before { top:0; transform:rotate(45deg); }
-    .nav-open .nav-toggle span:after { top:0; transform:rotate(-45deg); }
-    @media (max-width:880px){
-      .nav-links { position:fixed; inset:var(--nav-height) 0 0 0; flex-direction:column; background:#fff; padding:2.2rem clamp(1.2rem,5vw,2.5rem) 4rem; gap:1.2rem; transform:translateY(-120%); opacity:0; pointer-events:none; transition:transform .45s cubic-bezier(.65,.05,.36,1), opacity .3s; }
-      .nav-open .nav-links { transform:translateY(0); opacity:1; pointer-events:auto; }
-      .nav-toggle { display:inline-flex; }
-      .register-small { display:none; }
-      body.nav-open { overflow:hidden; touch-action:none; }
+  const speakers: Speaker[] = [
+    {
+      name: 'Matthias Augustin',
+      role: 'Technology Advisor & Cloud Adventurer',
+      bio: 'Meet Matthias—a digital builder who loves turning messy ideas into clean, scalable systems. With years in product, tech, and customer experience, he\'s the guy who keeps teams aligned while pushing prototypes into something real. At our hackathon, he will help you to turn "cool concept" into "working solution."',
+      image: 'https://media.licdn.com/dms/image/v2/D4E03AQFzHJTQQEoEkA/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1700149788092?e=1747267200&v=beta&t=8VQmYqJxZqKxXoGqVBqKqVBqKxXoGqVBqKxXoGqVBqKxXoGqVBqKxXoGqVBqKxXoGqVBqKxXo'
+    },
+    {
+      name: 'Kay Schneutzer',
+      role: 'Presales Consultant & DATA & AI Guru',
+      bio: 'Say hello to Kay—a strategy-meets-data powerhouse who spots value where others see noise. With global experience in AI, Data Analytics, and Innovation, he is all about making smart ideas commercially meaningful. Kay will show us how Github Copilot accelerates this.',
+      image: 'https://i.imgur.com/placeholder-kay.jpg'
+    },
+    {
+      name: 'Gesa-Kristin Gandetzky',
+      role: 'Github Account Manager & Adoption Navigator',
+      bio: 'Meet Gesa—a GitHub Account Manager who thrives on bringing the right people, ideas, and resources together. She\'s the friendly bridge between teams, mentors, and GitHub experts, making sure every project gets exactly what it needs to move forward. At our hackathon, she\'s your go-to guide for unblocking challenges, finding the perfect support, and keeping the energy high while everyone builds something amazing.',
+      image: 'https://media.licdn.com/dms/image/v2/D4E03AQGqO6-6YxVKKQ/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1705063858717?e=1747267200&v=beta&t=VxOGLrJ3k8HFP_jWZJQoK5YQpKxXoGqVBqKxXoGqVBqKxXoGqVBqKxXoGqVBqKxXoGqVBqKxXo'
     }
+  ]
 
-    /******************************************************************
-     * HERO
-     * Light mode uses decorative SVG background image hero-bg-light.svg
-     ******************************************************************/
-    .hero-bg {
-      position:relative;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(246,248,250,0.9) 70%, var(--bg) 100%),
-        url('hero-bg-light.svg') center/cover no-repeat;
+  const demoHighlights = [
+    { title: 'Agent Mode with Vision', description: 'Implementing complex UI features through natural language prompts' },
+    { title: 'MCP Server Integration', description: 'Extended capabilities for enhanced development workflows' },
+    { title: 'Automated Testing', description: 'Coverage analysis and quality assurance automation' },
+    { title: 'Security Scanning', description: 'AI-powered fixes and automated security improvements' },
+    { title: 'Hands-On Hackathon', description: 'Build your own app individually or in teams, then present your results' }
+  ]
+
+  const navItems = [
+    { id: 'about', label: 'About' },
+    { id: 'agenda', label: 'Agenda' },
+    { id: 'highlights', label: 'Highlights' },
+    { id: 'location', label: 'Location' },
+    { id: 'speakers', label: 'Speakers' }
+  ]
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId)
+    if (element) {
+      const offset = 80
+      const elementPosition = element.getBoundingClientRect().top
+      const offsetPosition = elementPosition + window.pageYOffset - offset
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      })
     }
-    .hero-bg:after {
-      content:"";
-      position:absolute;
-      left:0; right:0; bottom:0;
-      height:140px;
-      z-index:1;
-      background:linear-gradient(to bottom, rgba(246,248,250,0) 0%, var(--bg) 95%);
-      pointer-events:none;
-    }
-    .hero-bg > section { position:relative; z-index:2; }
+    setMobileMenuOpen(false)
+  }
 
-    .hero { margin-top:clamp(2rem,5vw,3.5rem); display:grid; grid-template-columns:minmax(0,1fr) 420px; gap:clamp(2rem,5vw,3.75rem); align-items:start; }
-    @media (max-width:1000px){ .hero { grid-template-columns:1fr; } }
+  return (
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-400">
+      <nav className="sticky top-0 z-50 bg-background/85 backdrop-blur-lg border-b border-border">
+        <div className="max-w-6xl mx-auto px-4 md:px-6">
+          <div className="flex items-center justify-between h-16 md:h-20">
+            <button
+              onClick={() => scrollToSection('about')}
+              className="flex items-center gap-3 font-bold text-base md:text-lg tracking-tight hover:opacity-80 transition-opacity"
+            >
+              <img
+                src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+                alt="GitHub Logo"
+                className="w-8 h-8 md:w-9 md:h-9 dark:invert"
+              />
+              <span className="hidden sm:inline">Copilot Hackathon</span>
+              <span className="sm:hidden">Hackathon</span>
+            </button>
 
-    .hero-left h1 { font-size:clamp(2.25rem,6vw,3.2rem); line-height:1.07; letter-spacing:clamp(-1.2px,-0.5vw,-2px); margin:0 0 1.2rem; font-weight:800; color:var(--text-strong); }
-    .hero-left p.lede { font-size:clamp(1rem,1.7vw,1.18rem); line-height:1.48; color:var(--muted); max-width:680px; margin:0 0 1.9rem; font-weight:500; }
-
-    .info-grid { display:flex; flex-direction:column; gap:16px; background:#fff; padding:clamp(1.6rem,3vw,2rem) clamp(1.4rem,3vw,1.9rem) clamp(1.9rem,3.2vw,2.2rem); border-radius:var(--radius-l); box-shadow:var(--shadow-strong); }
-    .info-row { display:flex; gap:12px; align-items:flex-start; }
-    .info-icon { font-size:1.25rem; margin-top:2px; }
-    .info-text .label { font-weight:600; display:block; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.9px; color:#57606a; margin-bottom:4px; }
-    .info-text .value { font-weight:600; font-size:0.9rem; line-height:1.35; }
-
-    .register-hero {
-      background:linear-gradient(135deg,var(--brand) 0%, #9965ff 70%);
-      color:#fff;
-      border:none;
-      font-size:1rem;
-      padding:15px 32px;
-      border-radius:14px;
-      font-weight:600;
-      cursor:pointer;
-      margin-top:10px;
-      box-shadow:0 4px 18px -2px rgba(130,87,229,0.48);
-      transition:transform .22s, box-shadow .22s;
-      text-decoration:none;
-      display:inline-block;
-    }
-    .register-hero:hover { transform:translateY(-3px); box-shadow:0 6px 24px -3px rgba(130,87,229,0.6); text-decoration:none; }
-    @media (max-width:520px){ .register-hero { width:100%; text-align:center; } }
-    @media (min-width:900px){
-      .register-hero { margin-bottom:44px; }
-    }
-
-    /******************************************************************
-     * GENERIC CARDS / HEADINGS
-     ******************************************************************/
-    .section-heading { font-size:clamp(1.9rem,5.2vw,2.6rem); font-weight:800; letter-spacing:clamp(-1.1px,-0.4vw,-1.5px); margin:0 0 30px; color:var(--text-strong); }
-    .card-block { position:relative; background:var(--card-bg); border-radius:var(--radius-l); padding:clamp(1.8rem,3.2vw,2.4rem) clamp(1.6rem,3vw,2.6rem); box-shadow:var(--shadow); margin-bottom:2.2rem; overflow:hidden; }
-    .card-block h2 { margin-top:0; font-size:clamp(1.3rem,2.4vw,1.65rem); letter-spacing:-0.5px; }
-
-    .split-2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:28px; margin-top:8px; }
-    @media (max-width:560px){ .split-2 { gap:18px; } }
-
-    /******************************************************************
-     * AGENDA
-     ******************************************************************/
-    .agenda-section { margin-top:clamp(3rem,6vw,4rem); }
-    .agenda-list { list-style:none; margin:0; padding:0; display:grid; gap:14px; }
-    @media (min-width:700px){ .agenda-list { grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); } }
-    .agenda-item { position:relative; display:flex; align-items:flex-start; gap:14px; background:#ffffff; border:1px solid #e4e7eb; border-radius:22px; padding:14px 16px 16px; box-shadow:var(--shadow); overflow:hidden; }
-    .agenda-item:before { content:""; position:absolute; inset:0; background:radial-gradient(circle at 12% 18%, var(--bubble-accent), transparent 60%); pointer-events:none; }
-    .agenda-icon { width:38px; height:38px; border-radius:12px; background:linear-gradient(145deg,#f3f5f9,#e7ebf3); display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 2px 4px rgba(0,0,0,0.08); }
-    .agenda-icon svg { width:20px; height:20px; }
-    .agenda-segment { font-size:0.58rem; letter-spacing:1.5px; font-weight:600; text-transform:uppercase; color:#59636e; margin-bottom:4px; display:block; }
-    .agenda-title { font-size:0.95rem; font-weight:700; line-height:1.25; letter-spacing:-0.2px; margin:0 0 2px; color:var(--text-strong); }
-    .agenda-desc { font-size:0.78rem; line-height:1.35; font-weight:500; color:#3f474f; margin:0; }
-
-    /******************************************************************
-     * DEMO LIST
-     ******************************************************************/
-    .demo-list { list-style:none; margin:0; padding:0; display:grid; gap:14px; }
-    .demo-list li { position:relative; display:flex; flex-direction:column; gap:2px; background:#f2f4f7; padding:14px 18px 14px 54px; border-radius:16px; font-size:0.9rem; line-height:1.38; font-weight:500; }
-    .demo-list li:before { content:""; position:absolute; left:18px; top:50%; transform:translateY(-50%); width:26px; height:26px; border-radius:50%; background:var(--accent-green); box-shadow:0 0 0 2px #fff, 0 2px 4px rgba(0,0,0,.15); background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'><path d='M5 13l4 4L19 7'/></svg>"); background-repeat:no-repeat; background-position:center; background-size:60% 60%; }
-    .demo-list li span { font-weight:600; color:#24292f; }
-
-    /******************************************************************
-     * LOCATION
-     ******************************************************************/
-    .location-section { margin-top:clamp(3.2rem,6vw,5rem); display:flex; gap:clamp(2rem,5vw,3.5rem); align-items:stretch; }
-    .location-details { flex:1; display:flex; flex-direction:column; justify-content:center; }
-    .location-title { font-size:clamp(1.9rem,5.2vw,2.6rem); font-weight:800; letter-spacing:clamp(-1px,-0.4vw,-1.5px); margin:0 0 1rem; color:var(--text-strong); }
-    .location-venue { font-size:1.05rem; font-weight:600; margin-bottom:10px; }
-    .location-address { font-size:0.95rem; font-weight:500; font-style:italic; line-height:1.5; max-width:400px; }
-    .location-map { flex:1; border-radius:22px; overflow:hidden; box-shadow:var(--shadow-strong); background:#fff; min-height:420px; display:flex; }
-    .location-map iframe { width:100%; height:100%; border:0; }
-    @media (max-width:960px){ .location-section { flex-direction:column; } .location-map { min-height:350px; } }
-    @media (max-width:520px){ .location-map { min-height:300px; border-radius:18px; } }
-
-    /******************************************************************
-     * SPEAKERS
-     ******************************************************************/
-    .speakers-section { margin-top:clamp(3.2rem,6vw,5rem); padding-bottom:clamp(3rem,5vw,4rem); }
-    .speaker-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:clamp(1.4rem,4vw,2.2rem); margin-top:10px; }
-    .speaker-card { background:#fff; border-radius:24px; padding:clamp(1.9rem,3vw,2.3rem) clamp(1.4rem,3vw,2rem) clamp(2.1rem,3.5vw,2.5rem); box-shadow:var(--shadow-strong); text-align:center; position:relative; overflow:hidden; }
-    .speaker-card:before { content:""; position:absolute; inset:0; background:radial-gradient(circle at 30% 20%, var(--bubble-accent), transparent 70%); pointer-events:none; }
-    .speaker-img { width:clamp(90px,24vw,128px); height:clamp(90px,24vw,128px); border-radius:50%; object-fit:cover; margin:0 auto 18px; border:5px solid #fff; box-shadow:0 4px 18px -4px rgba(0,0,0,0.25); background:#ddd; }
-    .speaker-name { font-size:1.08rem; font-weight:700; letter-spacing:-0.3px; margin:0 0 6px; color:var(--text-strong); }
-    .speaker-role { font-size:0.72rem; font-weight:600; color:var(--brand); margin:0 0 14px; text-transform:uppercase; letter-spacing:1px; }
-    .speaker-bio { font-size:0.8rem; line-height:1.45; color:#49515a; font-weight:500; max-width:480px; margin:0 auto; text-align:left; }
-
-    /******************************************************************
-     * FOOTER
-     ******************************************************************/
-    footer { text-align:center; padding:60px 30px 80px; font-size:clamp(0.7rem,1.4vw,0.85rem); color:#5f6770; }
-
-    /******************************************************************
-     * LIGHT THEME EVENT FLOW CARD
-     ******************************************************************/
-    .event-flow-card-gradient {
-      background:linear-gradient(135deg,#ffffff 0%,#f3f4f7 100%);
-    }
-
-    /******************************************************************
-     * DARK MODE OVERRIDES
-     * Removes the light SVG background (keeps it ONLY for light mode)
-     ******************************************************************/
-    @media (prefers-color-scheme: dark){
-      :root {
-        --bg: #0d1117;
-        --bg-alt: #111823;
-        --surface: #161b22;
-        --surface-raised: #1d2632;
-        --surface-raised-alt: #1f2a38;
-        --border-subtle: #2b333b;
-        --border-strong: #3d444d;
-        --brand: #9f7bff;
-        --brand-hover: #b18dff;
-        --accent-green: #2ea043;
-        --text: #d5dde5;
-        --text-strong: #f5f7fa;
-        --muted: #a4b1c2;
-        --muted-soft: #8c98a6;
-        --shadow: 0 2px 4px rgba(0,0,0,.45), 0 4px 14px -4px rgba(0,0,0,.6);
-        --shadow-strong: 0 8px 26px -6px rgba(0,0,0,0.7);
-        --outline-focus: #3b82f6;
-      }
-
-      body {
-        background: linear-gradient(145deg,#0d1117 0%, #101a24 55%, #111f2b 100%);
-        color: var(--text);
-      }
-
-      .top-nav {
-        background: rgba(13,17,23,0.85);
-        backdrop-filter: blur(14px);
-        border-bottom:1px solid var(--border-subtle);
-      }
-      .brand, .nav-links a { color:var(--text); }
-      .nav-links a:hover { color:var(--brand); }
-      .nav-links a.active { outline:2px solid var(--outline-focus); }
-      .nav-toggle span,
-      .nav-toggle span:before,
-      .nav-toggle span:after { background:var(--text); }
-
-      /* DARK HERO: remove image (no hero-bg-light.svg), use dark bubbles */
-      .hero-bg {
-        background:
-          radial-gradient(circle at 18% 22%, rgba(159,123,255,0.08) 0%, rgba(159,123,255,0) 55%),
-          radial-gradient(circle at 78% 68%, rgba(78,108,212,0.10) 0%, rgba(78,108,212,0) 60%),
-          linear-gradient(180deg,#0e141a 0%, #0d1117 100%);
-      }
-      .hero-bg:after {
-        background:linear-gradient(to bottom, rgba(13,17,23,0) 0%, #0d1117 95%);
-      }
-      .hero-left h1 {
-        color:var(--text-strong);
-        text-shadow:0 3px 10px rgba(0,0,0,0.55);
-        background:none;
-        -webkit-background-clip:initial;
-      }
-      .hero-left p.lede { color:var(--muted); }
-
-      .info-grid {
-        background: var(--surface-raised);
-        border:1px solid var(--border-subtle);
-        box-shadow: var(--shadow-strong);
-      }
-      .info-text .label { color: var(--muted-soft); }
-      .info-text .value { color: var(--text-strong); }
-
-      .register-hero {
-        background:linear-gradient(135deg,#8d6dff 0%, #6a4af6 95%);
-        box-shadow:0 6px 24px -4px rgba(130,97,255,0.55), 0 2px 6px rgba(0,0,0,0.45);
-      }
-      .register-hero:hover { background:linear-gradient(135deg,#b28eff 0%, #8b6bff 95%); }
-
-      .card-block,
-      .agenda-item,
-      .demo-list li,
-      .speaker-card,
-      .location-map,
-      .info-grid,
-      .event-flow-card-gradient {
-        background: var(--surface);
-        border:1px solid var(--border-subtle);
-        box-shadow: var(--shadow);
-        color: var(--text);
-      }
-
-      .card-block:before,
-      .agenda-item:before,
-      .speaker-card:before {
-        content:"";
-        position:absolute;
-        inset:0;
-        background:
-          radial-gradient(circle at 25% 20%, rgba(159,123,255,0.06) 0%, rgba(159,123,255,0) 55%),
-          radial-gradient(circle at 88% 78%, rgba(78,108,212,0.08) 0%, rgba(78,108,212,0) 60%),
-          radial-gradient(circle at -6% 110%, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0) 70%);
-        pointer-events:none;
-      }
-
-      .event-flow-card-gradient { background:var(--surface-raised); }
-
-      .card-block h2,
-      .section-heading,
-      .location-title { color:var(--text-strong); }
-
-      .agenda-item { background: var(--surface-raised); }
-      .agenda-icon {
-        background: linear-gradient(145deg,#202b37,#1d2632);
-        box-shadow:0 2px 4px rgba(0,0,0,.55), 0 0 0 1px #2a333d;
-      }
-      .agenda-icon svg { stroke: var(--brand); }
-      .agenda-title { color:var(--text-strong); }
-      .agenda-segment { color: var(--muted-soft); }
-      .agenda-desc { color: var(--muted); }
-
-      .demo-list li {
-        background: #1e2732;
-      }
-      .demo-list li span { color:var(--text-strong); }
-
-      .location-map { background:#0d1117; border:1px solid var(--border-subtle); }
-      .location-address a { color:var(--brand); }
-      .location-address span { color:var(--muted); }
-
-      .speaker-card {
-        background:var(--surface-raised);
-        color:var(--text);
-      }
-      .speaker-name { color:var(--text-strong); }
-      .speaker-role { color:var(--brand); }
-      .speaker-bio { color:var(--muted); }
-
-      .register-small {
-        background:linear-gradient(145deg,#8d6dff,#6a4af6);
-        box-shadow:0 4px 16px -4px rgba(130,97,255,0.55);
-      }
-      .register-small:hover { background:linear-gradient(145deg,#b18dff,#8b6bff); }
-
-      a { color: var(--brand); }
-      a:hover { color: var(--brand-hover); }
-
-      footer {
-        background:#0d1117;
-        color:#6d7782;
-      }
-
-      strong, b { color: var(--text-strong); }
-    }
-
-    /******************************************************************
-     * OPTIONAL FORCED THEME CLASSES
-     ******************************************************************/
-    html.force-dark { color-scheme: dark; }
-    html.force-light { color-scheme: light; }
-
-  </style>
-</head>
-<body>
-
-  <!-- NAV -->
-  <nav class="top-nav">
-    <div class="wrap nav-inner">
-      <a href="#about" class="brand">
-        <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub Logo">
-        Copilot Event Vienna
-      </a>
-      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
-        <span></span>
-      </button>
-      <ul class="nav-links" id="siteNav">
-        <li><a href="#about" class="nav-link active">About</a></li>
-        <li><a href="#agenda" class="nav-link">Agenda</a></li>
-        <li><a href="#highlights" class="nav-link">Highlights</a></li>
-        <li><a href="#location" class="nav-link">Location</a></li>
-        <li><a href="#speakers" class="nav-link">Speakers</a></li>
-        <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSc62aHHMLmvRDQidvsnCijBuIv95qe33EP8oGGZC14zplFrZw/viewform?usp=dialog" class="nav-link">Register</a></li>
-      </ul>
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLSc62aHHMLmvRDQidvsnCijBuIv95qe33EP8oGGZC14zplFrZw/viewform?usp=dialog" class="register-small">Register</a>
-    </div>
-  </nav>
-
-  <!-- HERO + Event Flow -->
-  <div class="hero-bg">
-    <section id="about" class="wrap">
-      <div class="hero">
-        <div class="hero-left">
-          <h1>GitHub Copilot Event – Microsoft Vienna</h1>
-          <p class="lede">
-            Join us for a focused, hands-on exploration of AI-powered developer productivity.
-            Discover how GitHub Copilot and the GitHub platform accelerate innovation, improve quality,
-            and transform the way engineering teams build and deliver software.
-          </p>
-          <a href="https://docs.google.com/forms/d/e/1FAIpQLSc62aHHMLmvRDQidvsnCijBuIv95qe33EP8oGGZC14zplFrZw/viewform?usp=dialog" class="register-hero">Register Now</a>
-        </div>
-        <div class="hero-right">
-          <div class="info-grid">
-            <div class="info-row">
-              <div class="info-icon">📅</div>
-              <div class="info-text">
-                <span class="label">Date</span>
-                <span class="value">December 15, 2025</span>
-              </div>
+            <div className="hidden lg:flex items-center gap-8">
+              {navItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => scrollToSection(item.id)}
+                  className={`text-sm font-medium transition-colors hover:text-primary ${
+                    activeSection === item.id ? 'text-primary font-semibold' : 'text-foreground'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
+              <a
+                href="https://docs.google.com/forms/d/e/1FAIpQLSc62aHHMLmvRDQidvsnCijBuIv95qe33EP8oGGZC14zplFrZw/viewform?usp=dialog"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-full shadow-lg">
+                  Register
+                </Button>
+              </a>
             </div>
-            <div class="info-row">
-              <div class="info-icon">🕒</div>
-              <div class="info-text">
-                <span class="label">Time</span>
-                <span class="value">9:00 AM – 5:00 PM </span>
-              </div>
-            </div>
-            <div class="info-row">
-              <div class="info-icon">📍</div>
-              <div class="info-text">
-                <span class="label">Venue</span>
-                <span class="value">Microsoft Vienna, Am Europlatz 3<br>1120 Vienna , Austria</span>
-              </div>
-            </div>
-            <div class="info-row">
-              <div class="info-icon">👥</div>
-              <div class="info-text">
-                <span class="label">Format</span>
-                <span class="value">Workshop , Hands-On Activity & Presentation </span>
-              </div>
+
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleTheme}
+                className="rounded-full"
+                aria-label="Toggle theme"
+              >
+                {theme === 'light' ? (
+                  <Moon weight="duotone" className="h-5 w-5" />
+                ) : (
+                  <Sun weight="duotone" className="h-5 w-5" />
+                )}
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="lg:hidden rounded-full"
+                aria-label="Toggle menu"
+              >
+                {mobileMenuOpen ? (
+                  <X className="h-6 w-6" />
+                ) : (
+                  <List className="h-6 w-6" />
+                )}
+              </Button>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div class="cards-wrapper">
-        <div class="card-block event-flow-card-gradient">
-          <h2>Event Flow</h2>
-            <div class="split-2">
-              <div>
-                <ul style="padding-left:18px; margin:0; line-height:1.55; font-weight:500; font-size:0.9rem;">
-                  <li><strong>Doors Open:</strong> 9:00 AM</li>
-                  <li><strong>Event Start:</strong> 9:30 AM</li>
-                  <li><strong>Sessions:</strong> 9:30 AM – 5:00 PM</li>
-                
-                </ul>
-              </div>
-              <div style="font-size:0.9rem; line-height:1.5; font-weight:500; color:var(--muted);">
-                A comprehensive demonstration of GitHub Copilot's advanced AI capabilities using the OctoCat Supply web application. 
-                This demo showcases Copilot Agent Mode with Vision for implementing complex UI features, MCP server integration for extended capabilities,
-                automated testing with coverage analysis, security scanning with AI-powered fixes, and DevOps automation—all through natural language prompts.
-              </div>
+          {mobileMenuOpen && (
+            <div className="lg:hidden pb-4 space-y-2 animate-in slide-in-from-top">
+              {navItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => scrollToSection(item.id)}
+                  className={`block w-full text-left px-4 py-2 rounded-lg transition-colors ${
+                    activeSection === item.id
+                      ? 'bg-primary/10 text-primary font-semibold'
+                      : 'hover:bg-muted'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
+              <a
+                href="https://docs.google.com/forms/d/e/1FAIpQLSc62aHHMLmvRDQidvsnCijBuIv95qe33EP8oGGZC14zplFrZw/viewform?usp=dialog"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block pt-2"
+              >
+                <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
+                  Register Now
+                </Button>
+              </a>
             </div>
+          )}
         </div>
-      </div>
-    </section>
-  </div>
+      </nav>
 
-  <!-- AGENDA -->
-  <section id="agenda" class="wrap agenda-section">
-    <h2 class="section-heading" style="margin-bottom:20px;">Agenda</h2>
-    <ol class="agenda-list">
-      <li class="agenda-item">
-        <div class="agenda-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#8257e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 3v4M12 17v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M3 12h4M17 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-          </svg>
-        </div>
-        <div>
-          <span class="agenda-segment">Segment 1</span>
-          <p class="agenda-title">Intro</p>
-        </div>
-      </li>
-      <li class="agenda-item">
-        <div class="agenda-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#8257e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="8"/>
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M12 2v2M12 20v2M2 12h2M20 12h2"/>
-          </svg>
-        </div>
-        <div>
-          <span class="agenda-segment">Segment 2</span>
-          <p class="agenda-title">Shaping the Future</p>
-          <p class="agenda-desc">Dive into GitHub Copilot's Agentic features with a live introduction and showcase </p>
-        </div>
-      </li>
-      <li class="agenda-item">
-        <div class="agenda-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#8257e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 4h16v16H4z"/>
-            <path d="M8 9l3 3-3 3M12 15h4"/>
-          </svg>
-        </div>
-        <div>
-          <span class="agenda-segment">Segment 3</span>
-          <p class="agenda-title">AI in Action - Build your App </p>
-          <p class="agenda-desc">Hands-On workshop of Agentic and AI capabilities driving innovation and productivity by creating an App with Copilot.</p>
-        </div>
-      </li>
-      <li class="agenda-item">
-        <div class="agenda-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#8257e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 3v18h18"/>
-            <path d="M7 15l4-4 3 3 5-7"/>
-          </svg>
-        </div>
-        <div>
-          <span class="agenda-segment">Segment 4</span>
-          <p class="agenda-title">Presentation </p>
-          <p class="agenda-desc">Presentation of App Ideas from Workshop and Closing Note</p>
-        </div>
-      </li>
-      <li class="agenda-item">
-        <div class="agenda-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#8257e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 11.5a7.5 7.5 0 0 0-9-7.36A7.5 7.5 0 0 0 3 11.5c0 4 3.5 7.5 7.5 7.5.83 0 1.63-.13 2.38-.38L21 21l-1.62-4.31A7.46 7.46 0 0 0 21 11.5Z"/>
-          </svg>
-        </div>
-   
-      </li>
-    </ol>
-  </section>
+      <section id="about" className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-accent/5 to-background pointer-events-none" />
+        <div className="relative max-w-6xl mx-auto px-4 md:px-6 py-12 md:py-20">
+          <div className="grid lg:grid-cols-[1fr_420px] gap-8 md:gap-12 items-start">
+            <div className="space-y-6">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
+                GitHub Copilot Hackathon – SoftwareONE
+              </h1>
+              <p className="text-lg md:text-xl text-muted-foreground font-medium leading-relaxed max-w-3xl">
+                Join us for a focused, hands-on exploration of AI-powered developer productivity.
+                Discover how GitHub Copilot and the GitHub platform accelerate innovation, improve quality,
+                and transform the way engineering teams build and deliver software.
+              </p>
+              <a
+                href="https://docs.google.com/forms/d/e/1FAIpQLSc62aHHMLmvRDQidvsnCijBuIv95qe33EP8oGGZC14zplFrZw/viewform?usp=dialog"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white font-semibold shadow-xl hover:shadow-2xl transition-all hover:scale-105 rounded-xl"
+                >
+                  Register Now
+                </Button>
+              </a>
+            </div>
 
-  <!-- HIGHLIGHTS -->
-  <section id="highlights" class="wrap" style="margin-top:clamp(2.4rem,5vw,4rem);">
-    <div class="card-block">
-      <h2>Live Demo Highlights</h2>
-      <ul class="demo-list">
-        <li><span>Developer Workflow:</span> GitHub models &amp; coding agent in action</li>
-        <li><span>IDE Experience:</span> Custom instructions, chat modes, agent mode, MCP Server</li>
-        <li><span>AI-Powered Platform:</span> Pull request summary, Copilot review, GitHub Loops, Spaces, Spark</li>
-        <li><span>Security &amp; Protection:</span> Autofix, security campaigns with auto-issue creation, AI-powered secret detection, code quality</li>
-        <li><span>Visibility:</span> Advanced Billing Dashboards &amp; Metrics Dashboard</li>
-      </ul>
+            <Card className="shadow-xl">
+              <CardContent className="p-6 space-y-4">
+                <div className="flex items-start gap-3">
+                  <Calendar weight="duotone" className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Date</p>
+                    <p className="font-semibold">December 15, 2025</p>
+                  </div>
+                </div>
+                <Separator />
+                <div className="flex items-start gap-3">
+                  <Clock weight="duotone" className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Time</p>
+                    <p className="font-semibold">9:00 AM – 5:00 PM</p>
+                  </div>
+                </div>
+                <Separator />
+                <div className="flex items-start gap-3">
+                  <MapPin weight="duotone" className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Venue</p>
+                    <p className="font-semibold">Microsoft Vienna, Am Europlatz 3<br />1120 Vienna, Austria</p>
+                  </div>
+                </div>
+                <Separator />
+                <div className="flex items-start gap-3">
+                  <Users weight="duotone" className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Format</p>
+                    <p className="font-semibold">Workshop, Hands-On Activity & Presentation</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <Card className="mt-12 shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-2xl md:text-3xl">Event Flow</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <ul className="space-y-2 text-sm md:text-base font-medium">
+                    <li><strong>Doors Open:</strong> 9:00 AM</li>
+                    <li><strong>Event Start:</strong> 9:30 AM</li>
+                    <li><strong>Sessions:</strong> 9:30 AM – 5:00 PM</li>
+                  </ul>
+                </div>
+                <div className="text-sm md:text-base text-muted-foreground leading-relaxed font-medium">
+                  A comprehensive demonstration of GitHub Copilot's advanced AI capabilities using the OctoCat Supply web application.
+                  This demo showcases Copilot Agent Mode with Vision for implementing complex UI features, MCP server integration for extended capabilities,
+                  automated testing with coverage analysis, security scanning with AI-powered fixes, and DevOps automation—all through natural language prompts.
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      <section id="agenda" className="max-w-6xl mx-auto px-4 md:px-6 py-12 md:py-16">
+        <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-8">Agenda</h2>
+        <div className="grid sm:grid-cols-2 gap-4">
+          {agendaItems.map((item, index) => (
+            <Card key={index} className="relative overflow-hidden group hover:shadow-lg transition-shadow">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <CardContent className="p-5 relative">
+                <div className="flex items-start gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center flex-shrink-0 shadow-sm">
+                    {item.icon}
+                  </div>
+                </div>
+                <h3 className="font-bold text-base mb-1 leading-tight">
+                  {item.title}
+                </h3>
+                {item.description && (
+                  <p className="text-xs text-muted-foreground leading-relaxed">{item.description}</p>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <section id="highlights" className="max-w-6xl mx-auto px-4 md:px-6 py-12 md:py-16">
+        <Card className="shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-2xl md:text-3xl">Hackathon Highlights</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {demoHighlights.map((item, index) => (
+                <div
+                  key={index}
+                  className="flex items-start gap-4 bg-muted/30 rounded-xl p-4 hover:bg-muted/50 transition-colors"
+                >
+                  <div className="w-7 h-7 rounded-full bg-success flex items-center justify-center flex-shrink-0 shadow-sm">
+                    <CheckCircle weight="fill" className="w-5 h-5 text-success-foreground" />
+                  </div>
+                  <div className="flex-1 text-sm md:text-base">
+                    <span className="font-semibold">{item.title}:</span>{' '}
+                    <span className="text-muted-foreground">{item.description}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section id="location" className="max-w-6xl mx-auto px-4 md:px-6 py-12 md:py-16">
+        <div className="grid lg:grid-cols-2 gap-8 items-start">
+          <div className="space-y-4">
+            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">Location</h2>
+            <div>
+              <p className="text-lg font-semibold mb-2">Microsoft Vienna</p>
+              <p className="text-base text-muted-foreground font-medium italic leading-relaxed">
+                Am Europlatz 3, 1120 Vienna, Austria
+              </p>
+              <p className="text-sm text-muted-foreground mt-4 font-medium">
+                Arrive early to grab a coffee and connect before we begin.
+              </p>
+            </div>
+          </div>
+          <div className="rounded-2xl overflow-hidden shadow-xl bg-card h-[300px] md:h-[420px]">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1695.529419666575!2d16.33197421730079!3d48.17217639365838!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x476da8414fa1f10b%3A0x66bbfae0c27b34a!2sMicrosoft%20%C3%96sterreich!5e0!3m2!1sde!2snl!4v1763566243831!5m2!1sde!2snl"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Microsoft Vienna Location"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section id="speakers" className="max-w-6xl mx-auto px-4 md:px-6 py-12 md:py-16 pb-20">
+        <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-8">Speakers</h2>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          {speakers.map((speaker, index) => (
+            <Card key={index} className="relative overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none" />
+              <CardContent className="p-6 md:p-8 text-center relative">
+                <div className="w-24 h-24 md:w-32 md:h-32 mx-auto mb-4 rounded-full overflow-hidden border-4 border-background shadow-lg bg-muted">
+                  <img
+                    src={speaker.image}
+                    alt={speaker.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <h3 className="text-lg md:text-xl font-bold mb-2 tracking-tight">{speaker.name}</h3>
+                <Badge className="mb-4 bg-primary/10 text-primary hover:bg-primary/20 text-xs font-semibold uppercase tracking-wide">
+                  {speaker.role}
+                </Badge>
+                <p className="text-xs md:text-sm text-muted-foreground leading-relaxed text-left font-medium">
+                  {speaker.bio}
+                </p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <footer className="text-center py-12 md:py-16 text-xs md:text-sm text-muted-foreground border-t border-border">
+        <p>© 2025 GitHub Copilot Hackathon – SoftwareONE. All rights reserved.</p>
+      </footer>
     </div>
-  </section>
+  )
+}
 
-  <!-- LOCATION -->
-  <section id="location" class="wrap location-section">
-    <div class="location-details">
-      <h2 class="location-title">Location</h2>
-      <div class="location-venue">Microsoft Vienna</div>
-      <div class="location-address">
-<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1695.529419666575!2d16.33197421730079!3d48.17217639365838!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x476da8414fa1f10b%3A0x66bbfae0c27b34a!2sMicrosoft%20%C3%96sterreich!5e0!3m2!1sde!2snl!4v1763566243831!5m2!1sde!2snl" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-          Am Europlatz 3, 1120 Vienna, Austria
-        </a><br><br>
-        <span style="font-style:normal; font-size:0.8rem; font-weight:500;">
-          Arrive early to grab a coffee and connect before we begin.
-        </span>
-      </div>
-    </div>
-    <div class="location-map">
-    </div>
-  </section>
+export default App
 
-  <!-- SPEAKERS -->
-  <section id="speakers" class="wrap speakers-section">
-    <h2 class="section-heading">Speakers</h2>
-    <div class="speaker-grid">
-      <div class="speaker-card">
-       <img src="Matthias.jpeg" alt="Matthias Augustin" class="speaker-img" />
-        <div class="speaker-name">Matthias Augustin</div>
-        <div class="speaker-role">Technology Advisor &amp; Cloud Adventurer</div>
-        <p class="speaker-bio">
-         Meet Matthias—a digital builder who loves turning messy ideas into clean, scalable systems. With years in product, tech, and customer experience, he’s the guy who keeps teams aligned while pushing prototypes into something real. 
-          At our hackathon, he will help ypu to turn “cool concept” into “working solution.”
-        </p>
-      </div>
-      <div class="speaker-card">
-        <img src="Kay.jpeg" alt="Kay Schneutzer" class="speaker-img" />
-        <div class="speaker-name">Kay Schneutzer</div>
-        <div class="speaker-role">Presales Consultant &amp; DATA & AI Guru </div>
-        <p class="speaker-bio">
-         Say hello to Kay—a strategy-meets-data powerhouse who spots value where others see noise. With global experience in AI, Data Analytics, and Innovation, he is all about making smart ideas commercially meaningful. Kay will show us how Github Copilot accelerates this.
-        </p>
-      </div>
-      <div class="speaker-card">
-        <img src="Gesa-kristin gandetzky_24-07-17_GitHub RKO_3001.jpg" alt="Gesa-Kristin Gandetzky" class="speaker-img" />
-        <div class="speaker-name">Gesa-Kristin Gandetzky</div>
-        <div class="speaker-role">Github Account Manager &amp; Adoption Navigator</div>
-        <p class="speaker-bio">
-          Meet Gesa—a GitHub Account Manager who thrives on bringing the right people, ideas, and resources together. She’s the friendly bridge between teams, mentors, and GitHub experts, making sure every project gets exactly what it needs to move forward. At our hackathon, she’s your go-to guide for unblocking challenges, finding the perfect support, and keeping the energy high while everyone builds something amazing.
-        </p>
-      </div>
-
-    </div>
-  </section>
-
-  <footer>
-    © 2025 GitHub Copilot Event – Microsoft Vienna All rights reserved.
-  </footer>
-
-  <script>
-    // Active nav highlighting
-    const sections = document.querySelectorAll('section');
-    const navLinks = document.querySelectorAll('.nav-link');
-    function setActive(){
-      const scrollPos = window.scrollY + 140;
-      let currentId = 'about';
-      sections.forEach(sec=>{
-        if(scrollPos >= sec.offsetTop && scrollPos < sec.offsetTop + sec.offsetHeight){
-          currentId = sec.id;
-        }
-      });
-      navLinks.forEach(a=>{
-        a.classList.toggle('active', a.getAttribute('href') === '#' + currentId);
-      });
-    }
-    window.addEventListener('scroll', setActive);
-    window.addEventListener('load', setActive);
-
-    // Mobile nav toggle
-    const toggleBtn = document.querySelector('.nav-toggle');
-    toggleBtn.addEventListener('click', ()=>{
-      document.body.classList.toggle('nav-open');
-      const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
-      toggleBtn.setAttribute('aria-expanded', String(!expanded));
-    });
-    navLinks.forEach(link=>{
-      link.addEventListener('click', ()=>{
-        if(window.matchMedia('(max-width:880px)').matches){
-          document.body.classList.remove('nav-open');
-          toggleBtn.setAttribute('aria-expanded','false');
-        }
-      });
-    });
-    document.addEventListener('keydown', e=>{
-      if(e.key==='Escape' && document.body.classList.contains('nav-open')){
-        document.body.classList.remove('nav-open');
-        toggleBtn.setAttribute('aria-expanded','false');
-        toggleBtn.focus();
-      }
-    });
-  </script>
-</body>
-</html>
